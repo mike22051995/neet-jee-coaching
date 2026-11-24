@@ -9,6 +9,7 @@ from app.models.user import User
 from app.models.batch import Batch, ScheduleSession
 from app.models.enrollment import Enrollment, PaymentSubmission, AuditLog
 from app.models.site_settings import SiteSettings
+from app.models.test import ExamStudent, Test, Question, TestAttempt, AttemptAnswer
 
 __all__ = [
     "User",
@@ -18,4 +19,9 @@ __all__ = [
     "PaymentSubmission",
     "AuditLog",
     "SiteSettings",
+    "ExamStudent",
+    "Test",
+    "Question",
+    "TestAttempt",
+    "AttemptAnswer",
 ]

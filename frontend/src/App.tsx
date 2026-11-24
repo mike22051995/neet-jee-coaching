@@ -18,6 +18,15 @@ import { BatchDetailPage } from '@/pages/admin/BatchDetailPage'
 import { StudentsPage } from '@/pages/admin/StudentsPage'
 import { PaymentsPage } from '@/pages/admin/PaymentsPage'
 import { SettingsPage } from '@/pages/admin/SettingsPage'
+import { TestsPage } from '@/pages/admin/TestsPage'
+import { TestDetailPage } from '@/pages/admin/TestDetailPage'
+import { TestResultsPage } from '@/pages/admin/TestResultsPage'
+import { ExamStudentsPage } from '@/pages/admin/ExamStudentsPage'
+
+import { StudentLoginPage } from '@/pages/student/StudentLoginPage'
+import { StudentDashboardPage } from '@/pages/student/StudentDashboardPage'
+import { ExamPage } from '@/pages/student/ExamPage'
+import { ResultPage } from '@/pages/student/ResultPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +71,18 @@ export function App() {
             <Route path="payments" element={<PaymentsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
+
+          {/* Admin test routes — each page wraps itself in AdminLayout + ProtectedRoute internally */}
+          <Route path="/admin/tests" element={<ProtectedRoute><TestsPage /></ProtectedRoute>} />
+          <Route path="/admin/tests/:testId" element={<ProtectedRoute><TestDetailPage /></ProtectedRoute>} />
+          <Route path="/admin/tests/:testId/results" element={<ProtectedRoute><TestResultsPage /></ProtectedRoute>} />
+          <Route path="/admin/exam-students" element={<ProtectedRoute><ExamStudentsPage /></ProtectedRoute>} />
+
+          {/* Student exam portal */}
+          <Route path="/student/login" element={<StudentLoginPage />} />
+          <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+          <Route path="/student/exam/:attemptId" element={<ExamPage />} />
+          <Route path="/student/result/:attemptId" element={<ResultPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

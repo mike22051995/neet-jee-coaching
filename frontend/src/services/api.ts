@@ -105,6 +105,61 @@ export const adminApi = {
   },
 }
 
+// ── Student API ─────────────────────────────────────────────────────────────
+
+export const studentApi = {
+  login: (username: string, password: string) =>
+    api.post('/api/student/login', { username, password }).then(r => r.data),
+
+  logout: () => api.post('/api/student/logout').then(r => r.data),
+
+  me: () => api.get('/api/student/me').then(r => r.data),
+
+  listTests: () => api.get('/api/student/tests').then(r => r.data),
+
+  startTest: (testId: string) =>
+    api.post(`/api/student/tests/${testId}/start`).then(r => r.data),
+
+  getAttempt: (attemptId: string) =>
+    api.get(`/api/student/attempts/${attemptId}`).then(r => r.data),
+
+  saveAnswer: (attemptId: string, questionId: string, selectedOption: string | null, markedForReview: boolean) =>
+    api.put(`/api/student/attempts/${attemptId}/answer`, {
+      question_id: questionId,
+      selected_option: selectedOption,
+      is_marked_for_review: markedForReview,
+    }).then(r => r.data),
+
+  submitAttempt: (attemptId: string, timedOut = false) =>
+    api.post(`/api/student/attempts/${attemptId}/submit?timed_out=${timedOut}`).then(r => r.data),
+
+  getResult: (attemptId: string) =>
+    api.get(`/api/student/attempts/${attemptId}/result`).then(r => r.data),
+}
+
+// ── Admin Test API ───────────────────────────────────────────────────────────
+
+export const adminTestApi = {
+  listTests: () => api.get('/api/admin/tests').then(r => r.data),
+  createTest: (data: unknown) => api.post('/api/admin/tests', data).then(r => r.data),
+  getTest: (id: string) => api.get(`/api/admin/tests/${id}`).then(r => r.data),
+  updateTest: (id: string, data: unknown) => api.patch(`/api/admin/tests/${id}`, data).then(r => r.data),
+  deleteTest: (id: string) => api.delete(`/api/admin/tests/${id}`),
+
+  uploadQuestion: (testId: string, formData: FormData) =>
+    api.post(`/api/admin/tests/${testId}/questions`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data),
+  deleteQuestion: (testId: string, questionId: string) =>
+    api.delete(`/api/admin/tests/${testId}/questions/${questionId}`),
+  getTestResults: (testId: string) =>
+    api.get(`/api/admin/tests/${testId}/results`).then(r => r.data),
+
+  listStudents: () => api.get('/api/admin/tests/students').then(r => r.data),
+  createStudent: (data: unknown) => api.post('/api/admin/tests/students', data).then(r => r.data),
+  updateStudent: (id: string, data: unknown) => api.patch(`/api/admin/tests/students/${id}`, data).then(r => r.data),
+}
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface EnrollmentCreateData {

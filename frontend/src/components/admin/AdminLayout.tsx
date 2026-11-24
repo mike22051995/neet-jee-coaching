@@ -1,5 +1,6 @@
+import React from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BookOpen, Users, CreditCard, Settings, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Users, CreditCard, Settings, LogOut, Menu, X, FileText, GraduationCap } from 'lucide-react'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { adminApi } from '@/services/api'
@@ -9,10 +10,16 @@ const navItems = [
   { to: '/admin/batches', icon: BookOpen, label: 'Batches' },
   { to: '/admin/students', icon: Users, label: 'Students' },
   { to: '/admin/payments', icon: CreditCard, label: 'Payments' },
+  { to: '/admin/tests', icon: FileText, label: 'Tests' },
+  { to: '/admin/exam-students', icon: GraduationCap, label: 'Exam Students' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function AdminLayout() {
+interface AdminLayoutProps {
+  children?: React.ReactNode
+}
+
+export function AdminLayout({ children }: AdminLayoutProps = {}) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
 
@@ -95,7 +102,7 @@ export function AdminLayout() {
 
         {/* Page content */}
         <main className="flex-1 p-4 md:p-6 overflow-auto">
-          <Outlet />
+          {children ?? <Outlet />}
         </main>
       </div>
     </div>

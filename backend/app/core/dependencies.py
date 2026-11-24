@@ -32,6 +32,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import decode_access_token
 from app.db.base import get_db_session
 from app.models.user import User
+from app.models.test import ExamStudent
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,43 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+
+async def get_current_student(
+    student_token: Optional[str] = Cookie(default=None),
+    db: AsyncSession = Depends(get_db_session),
+) -> ExamStudent:
+    """
+    Dependency: read the httpOnly 'student_token' cookie and return the ExamStudent.
+
+    Mirrors get_current_user but for the exam portal. Students have a separate
+    cookie so admin and student sessions can coexist in the same browser.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate student credentials",
+    )
+
+    if not student_token:
+        raise credentials_exception
+
+    try:
+        payload = decode_access_token(student_token)
+        student_id: str = payload.get("sub")
+        role: str = payload.get("role", "")
+        if student_id is None or role != "student":
+            raise credentials_exception
+    except JWTError as exc:
+        logger.warning("Student JWT validation failed: %s", exc)
+        raise credentials_exception from exc
+
+    result = await db.execute(select(ExamStudent).where(ExamStudent.id == student_id))
+    student = result.scalar_one_or_none()
+
+    if student is None or not student.is_active:
+        raise credentials_exception
+
+    return student
 
 
 async def require_admin(current_user: User = Depends(get_current_user)) -> User:

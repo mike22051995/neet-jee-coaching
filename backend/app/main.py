@@ -27,9 +27,11 @@ from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
 
 from app.api.routes.admin import router as admin_router
+from app.api.routes.admin_test import router as admin_test_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.enrollment import router as enrollment_router
 from app.api.routes.public import router as public_router
+from app.api.routes.student import router as student_router
 from app.core.config import get_settings
 from app.db.base import AsyncSessionLocal
 
@@ -58,7 +60,7 @@ async def lifespan(app: FastAPI):
         await auth_service.ensure_admin_exists()
 
     # Ensure upload directories exist
-    for subdir in ["receipts", "public"]:
+    for subdir in ["receipts", "public", "questions"]:
         path = os.path.join(settings.UPLOAD_DIR, subdir)
         os.makedirs(path, exist_ok=True)
 
@@ -94,11 +96,18 @@ uploads_public_dir = os.path.join(settings.UPLOAD_DIR, "public")
 os.makedirs(uploads_public_dir, exist_ok=True)
 app.mount("/uploads/public", StaticFiles(directory=uploads_public_dir), name="public_uploads")
 
+# Question images are served publicly (students need them during exams)
+uploads_questions_dir = os.path.join(settings.UPLOAD_DIR, "questions")
+os.makedirs(uploads_questions_dir, exist_ok=True)
+app.mount("/uploads/questions", StaticFiles(directory=uploads_questions_dir), name="question_uploads")
+
 # Register all routers under /api prefix
 app.include_router(auth_router, prefix="/api")
 app.include_router(public_router, prefix="/api")
 app.include_router(enrollment_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
+app.include_router(admin_test_router, prefix="/api")
+app.include_router(student_router, prefix="/api")
 
 
 @app.get("/api/health")
