@@ -58,6 +58,22 @@ class Settings(BaseSettings):
     TEST_DATABASE_URL: str = ""
 
     @property
+    def async_database_url(self) -> str:
+        """
+        Return the DATABASE_URL with the asyncpg driver prefix.
+
+        Render (and many cloud providers) supply connection strings as
+        'postgres://' or 'postgresql://' — SQLAlchemy's async engine requires
+        'postgresql+asyncpg://'. This property normalises all three formats.
+        """
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+asyncpg://", 1)
+        if url.startswith("postgresql://") and "+asyncpg" not in url:
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+
+    @property
     def cors_origins(self) -> List[str]:
         """Parse comma-separated ALLOWED_ORIGINS into a list."""
         return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]

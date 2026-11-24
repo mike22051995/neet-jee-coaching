@@ -30,7 +30,7 @@ settings = get_settings()
 config = context.config
 
 # Override sqlalchemy.url with the value from our app config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.async_database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

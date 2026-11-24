@@ -30,7 +30,7 @@ settings = get_settings()
 # pool_pre_ping=True: test connections before use to handle DB restarts gracefully.
 # echo=True in development prints SQL queries to stdout — disable in production.
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.async_database_url,
     pool_pre_ping=True,
     echo=settings.DEBUG,
     pool_size=10,

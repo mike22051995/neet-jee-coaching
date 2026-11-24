@@ -47,13 +47,16 @@ async def login(
     token_data = await service.authenticate(data.email, data.password)
 
     response = JSONResponse(content={"message": "ok"})
+    # In production the frontend and backend are on different subdomains
+    # (*.onrender.com), so the cookie needs SameSite=none + Secure=true to
+    # travel cross-origin over HTTPS. In development (HTTP) lax is fine.
     response.set_cookie(
         key=_COOKIE_NAME,
         value=token_data["access_token"],
-        httponly=True,                       # JS cannot read this cookie
+        httponly=True,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        samesite="lax",
-        secure=settings.is_production,       # HTTPS-only in production
+        samesite="none" if settings.is_production else "lax",
+        secure=settings.is_production,
         path="/",
     )
     return response
